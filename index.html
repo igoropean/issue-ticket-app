@@ -1,118 +1,204 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
-<link rel="apple-touch-icon" href="icons/icon-192.png">
-<title>Issue Ticket App</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#0d6efd" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <title>Issue Ticket App</title>
 
-<link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#0d6efd">
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
 
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-<link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
-<link rel="stylesheet" href="assets/css/style.css">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/style.css">
 </head>
 
 <body>
-<div id="installBanner" class="alert alert-primary d-none d-flex justify-content-between align-items-center gap-2">
-  <div>
-    <strong>Install this app</strong><br>
-    <small id="installBannerText">Add Issue Ticket App to your home screen for faster access.</small>
-  </div>
-  <button id="installBtn" class="btn btn-sm btn-primary">Install</button>
-</div>
-<div class="container py-3">
+  <div class="container py-3 py-md-4 app-shell">
 
-<div id="loginCard" class="card shadow p-4">
-  <h3 class="mb-3 text-primary">Issue Ticket Login</h3>
-
-  <input id="username" class="form-control mb-2" placeholder="Username">
-  <input id="password" type="password" class="form-control mb-3" placeholder="Password">
-
-  <button class="btn btn-primary w-100" onclick="login()">Login</button>
-</div>
-
-<div id="appCard" class="d-none">
-
-  <div class="card shadow p-3 mb-3">
-    <div class="d-flex justify-content-between">
-  <div>
-  <h4 class="text-primary mb-0">Create Ticket</h4>
-  <small id="whoami"></small>
-  </div>
-    <button class="btn btn-outline-danger btn-sm" onclick="logout()">Logout</button>
-  </div>
-</div>
-
-<div class="card shadow p-3">
-
-  <input id="storeCode" class="form-control mb-3" placeholder="Store Code">
-  
-  <textarea id="issueDesc" class="form-control mb-3" rows="4" placeholder="Issue Description"></textarea>
-  
-  <select id="priority" class="form-select mb-3">
-  <option>Priority 1</option>
-  <option selected>Priority 2</option>
-  <option>Priority 3</option>
-  </select>
-  
-  <button id="addPhotoBtn" type="button" class="btn btn-outline-primary">
-    Add Photo
-  </button>
-  
-  <div id="photoPreview" class="mb-3 text-center"></div>
-  
-  <button id="submitBtn" class="btn btn-success w-100" onclick="submitTicket()">Create Ticket</button>
-
-</div>
-
-<div class="card shadow p-3 mt-3">
-<div>Status: <span id="netStatus"></span></div>
-<div>Pending Sync: <span id="pendingCount">0</span></div>
-</div>
-
-</div>
-
-</div>
-
-<div class="modal fade" id="cameraModal" tabindex="-1">
-  <div class="modal-dialog modal-fullscreen-sm-down modal-dialog-centered">
-    <div class="modal-content border-0">
-
-      <div class="modal-header">
-        <h5 class="modal-title">Capture Photo</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+    <div class="d-flex align-items-start justify-content-between gap-3 mb-3">
+      <div>
+        <div class="hero-badge mb-2">Blue Theme · Mobile PWA</div>
+        <h1 class="h3 fw-bold mb-1">Issue Ticket App</h1>
+        <div class="hint">Create tickets, capture photos, watermark them, and sync automatically.</div>
       </div>
-
-      <div class="modal-body p-0 bg-dark">
-        <video id="cameraVideo" autoplay playsinline muted></video>
-        <img id="cameraPreview" class="d-none w-100" alt="Captured preview">
-        <canvas id="captureCanvas" class="d-none"></canvas>
+      <div class="d-flex flex-column gap-2 align-items-end">
+        <button id="installBtnTop" class="btn btn-outline-primary btn-sm d-none">Install App</button>
+        <button id="logoutBtn" class="btn btn-outline-secondary btn-sm d-none">Logout</button>
       </div>
+    </div>
 
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" id="retakeBtn">Retake</button>
-        <button type="button" class="btn btn-primary" id="captureBtn">Capture</button>
-        <button type="button" class="btn btn-success d-none" id="usePhotoBtn">Use Photo</button>
+    <div id="installBanner" class="install-banner p-3 mb-3 d-none">
+      <div class="d-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-between gap-2">
+        <div>
+          <div class="fw-bold">Install this app</div>
+          <div id="installBannerText" class="small text-muted">
+            Add Issue Ticket App to your home screen for faster access.
+          </div>
+        </div>
+        <button id="installBannerBtn" class="btn btn-primary btn-sm">Install</button>
       </div>
+    </div>
 
+    <div class="row g-2 mb-3">
+      <div class="col-12 col-md-4">
+        <div class="status-pill">
+          <div class="d-flex align-items-center gap-2">
+            <span id="onlineDot" class="status-dot"></span>
+            <div>
+              <div class="small fw-semibold">Connection</div>
+              <div id="connectionLabel" class="small text-muted">Checking…</div>
+            </div>
+          </div>
+          <span id="connectionBadge" class="badge rounded-pill text-bg-secondary">—</span>
+        </div>
+      </div>
+      <div class="col-12 col-md-4">
+        <div class="status-pill">
+          <div>
+            <div class="small fw-semibold">Pending Sync</div>
+            <div class="small text-muted">IndexedDB queue</div>
+          </div>
+          <span id="pendingBadge" class="badge rounded-pill text-bg-primary">0</span>
+        </div>
+      </div>
+      <div class="col-12 col-md-4">
+        <div class="status-pill">
+          <div>
+            <div class="small fw-semibold">Sync Status</div>
+            <div id="syncLabel" class="small text-muted">Idle</div>
+          </div>
+          <span id="syncBadge" class="badge rounded-pill text-bg-success">All synced</span>
+        </div>
+      </div>
+    </div>
+
+    <div id="loginView" class="glass-card p-3 p-md-4">
+      <div class="row g-4 align-items-center">
+        <div class="col-12 col-lg-5">
+          <div class="section-label mb-2">Secure login</div>
+          <h2 class="h4 fw-bold mb-2">Client access</h2>
+          <p class="hint mb-0">Sign in using the Users sheet credentials.</p>
+        </div>
+        <div class="col-12 col-lg-7">
+          <form id="loginForm" class="row g-3">
+            <div class="col-12">
+              <label class="form-label fw-semibold">Username</label>
+              <input id="loginUsername" class="form-control" autocomplete="username" required>
+            </div>
+            <div class="col-12">
+              <label class="form-label fw-semibold">Password</label>
+              <input id="loginPassword" type="password" class="form-control" autocomplete="current-password" required>
+            </div>
+            <div class="col-12 d-grid">
+              <button id="loginBtn" type="submit" class="btn btn-primary btn-lg">Login</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <div id="appView" class="d-none">
+      <div class="glass-card p-3 p-md-4">
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-start gap-3 mb-3">
+          <div>
+            <div class="section-label mb-1">New issue ticket</div>
+            <div class="h5 fw-bold mb-1">Create and submit a ticket</div>
+            <div id="userLine" class="hint">Signed in</div>
+          </div>
+          <div class="text-md-end">
+            <div class="small text-muted">Record IDs are generated locally to avoid duplicate retries.</div>
+          </div>
+        </div>
+
+        <form id="ticketForm">
+          <div class="row g-3">
+            <div class="col-12 col-md-6">
+              <label class="form-label fw-semibold">Store Code</label>
+              <input id="storeCode" class="form-control" placeholder="eg. 1A" maxlength="60" required>
+            </div>
+            <div class="col-12 col-md-6">
+              <label class="form-label fw-semibold">Priority</label>
+              <select id="priority" class="form-select" required>
+                <option value="Priority 1">Priority 1</option>
+                <option value="Priority 2" selected>Priority 2</option>
+                <option value="Priority 3">Priority 3</option>
+              </select>
+            </div>
+            <div class="col-12">
+              <label class="form-label fw-semibold">Issue Description</label>
+              <textarea id="issueDescription" class="form-control" rows="4" placeholder="Describe the issue clearly..." maxlength="2000" required></textarea>
+            </div>
+
+            <div class="col-12">
+              <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-2 mb-2">
+                <div>
+                  <div class="fw-semibold">Attachments / Photos</div>
+                  <div class="hint">Capture up to 3 photos. Each one is watermarked before submission.</div>
+                </div>
+                <button id="addPhotoBtn" type="button" class="btn btn-outline-primary">
+                  Add Photo
+                </button>
+              </div>
+
+              <div class="preview-wrap p-3">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                  <div class="small text-muted">Captured photos</div>
+                  <div class="small text-muted"><span id="photoCount">0</span>/3</div>
+                </div>
+                <div id="photoGrid" class="photo-grid"></div>
+                <div id="photoEmpty" class="text-center text-muted py-4">
+                  No photos yet. Tap <strong>Add Photo</strong> to open the camera.
+                </div>
+              </div>
+            </div>
+
+            <div class="col-12 d-grid mt-2">
+              <button id="submitBtn" type="submit" class="btn btn-primary btn-lg">Create Ticket</button>
+            </div>
+          </div>
+        </form>
+      </div>
     </div>
   </div>
-</div>
-  
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-<script src="assets/js/config.js"></script>
-<script src="assets/js/db.js"></script>
-<script src="assets/js/auth.js"></script>
-<script src="assets/js/camera.js"></script>
-<script src="assets/js/submit.js"></script>
-<script src="assets/js/sync.js"></script>
-<script src="assets/js/app.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <div class="modal fade" id="cameraModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-fullscreen-sm-down">
+      <div class="modal-content camera-modal">
+        <div class="modal-header">
+          <h5 class="modal-title fw-bold">Capture Photo</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+
+        <div class="modal-body p-0 bg-dark">
+          <video id="cameraVideo" autoplay playsinline muted></video>
+          <img id="cameraPreview" class="d-none" alt="Captured preview">
+          <canvas id="captureCanvas" class="d-none"></canvas>
+        </div>
+
+        <div class="modal-footer d-flex justify-content-between">
+          <button id="retakeBtn" type="button" class="btn btn-outline-secondary d-none">Retake</button>
+          <button id="captureBtn" type="button" class="btn btn-primary">Capture</button>
+          <button id="usePhotoBtn" type="button" class="btn btn-success d-none">Use Photo</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/db.js"></script>
+  <script src="assets/js/transport.js"></script>
+  <script src="assets/js/auth.js"></script>
+  <script src="assets/js/camera.js"></script>
+  <script src="assets/js/submit.js"></script>
+  <script src="assets/js/sync.js"></script>
+  <script src="assets/js/app.js"></script>
 </body>
 </html>
