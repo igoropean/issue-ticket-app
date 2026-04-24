@@ -59,3 +59,10 @@ window.addEventListener("load", async () => {
     }
   });
 });
+
+function refreshPhotoButtonLabel() {
+  const btn = document.getElementById("addPhotoBtn");
+  if (!btn) return;
+
+  btn.textContent = capturedImage ? "Retake Photo" : "Add Photo";
+}
