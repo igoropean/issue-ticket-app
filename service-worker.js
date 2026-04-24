@@ -1,4 +1,4 @@
-const CACHE_NAME = "issue-v3";
+const CACHE_NAME = "issue-v4";
 
 const FILES = [
   "/issue-ticket-app/",
