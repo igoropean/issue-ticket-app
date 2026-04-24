@@ -41,6 +41,19 @@ border-radius:12px;
   background: #111827;
   display: block;
 }
+/* Force the camera video and captured images to fit the screen */
+video, canvas, #photoPreview img {
+    max-width: 100% !important;
+    height: auto !important;
+    display: block;
+    margin: 0 auto;
+}
+
+/* Adjust the SweetAlert popup width for mobile */
+.swal2-popup {
+    width: 95% !important;
+    padding: 10px !important;
+}
 
 @media (max-width: 575.98px) {
   #cameraVideo,
