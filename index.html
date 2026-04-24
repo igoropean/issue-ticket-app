@@ -26,45 +26,45 @@
 <div class="container py-3">
 
 <div id="loginCard" class="card shadow p-4">
-<h3 class="mb-3 text-primary">Issue Ticket Login</h3>
+  <h3 class="mb-3 text-primary">Issue Ticket Login</h3>
 
-<input id="username" class="form-control mb-2" placeholder="Username">
-<input id="password" type="password" class="form-control mb-3" placeholder="Password">
+  <input id="username" class="form-control mb-2" placeholder="Username">
+  <input id="password" type="password" class="form-control mb-3" placeholder="Password">
 
-<button class="btn btn-primary w-100" onclick="login()">Login</button>
+  <button class="btn btn-primary w-100" onclick="login()">Login</button>
 </div>
 
 <div id="appCard" class="d-none">
 
-<div class="card shadow p-3 mb-3">
-<div class="d-flex justify-content-between">
-<div>
-<h4 class="text-primary mb-0">Create Ticket</h4>
-<small id="whoami"></small>
-</div>
-<button class="btn btn-outline-danger btn-sm" onclick="logout()">Logout</button>
-</div>
+  <div class="card shadow p-3 mb-3">
+    <div class="d-flex justify-content-between">
+  <div>
+  <h4 class="text-primary mb-0">Create Ticket</h4>
+  <small id="whoami"></small>
+  </div>
+    <button class="btn btn-outline-danger btn-sm" onclick="logout()">Logout</button>
+  </div>
 </div>
 
 <div class="card shadow p-3">
 
-<input id="storeCode" class="form-control mb-3" placeholder="Store Code">
-
-<textarea id="issueDesc" class="form-control mb-3" rows="4" placeholder="Issue Description"></textarea>
-
-<select id="priority" class="form-select mb-3">
-<option>Priority 1</option>
-<option selected>Priority 2</option>
-<option>Priority 3</option>
-</select>
-
-<button id="addPhotoBtn" type="button" class="btn btn-outline-primary">
-  Add Photo
-</button>
-
-<div id="photoPreview" class="mb-3 text-center"></div>
-
-<button id="submitBtn" class="btn btn-success w-100" onclick="submitTicket()">Create Ticket</button>
+  <input id="storeCode" class="form-control mb-3" placeholder="Store Code">
+  
+  <textarea id="issueDesc" class="form-control mb-3" rows="4" placeholder="Issue Description"></textarea>
+  
+  <select id="priority" class="form-select mb-3">
+  <option>Priority 1</option>
+  <option selected>Priority 2</option>
+  <option>Priority 3</option>
+  </select>
+  
+  <button id="addPhotoBtn" type="button" class="btn btn-outline-primary">
+    Add Photo
+  </button>
+  
+  <div id="photoPreview" class="mb-3 text-center"></div>
+  
+  <button id="submitBtn" class="btn btn-success w-100" onclick="submitTicket()">Create Ticket</button>
 
 </div>
 
