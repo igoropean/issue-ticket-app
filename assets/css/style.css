@@ -1,63 +1,189 @@
+:root{
+  --blue-1:#0d6efd;
+  --blue-2:#0b5ed7;
+  --blue-3:#eaf3ff;
+  --ink:#14324a;
+  --muted:#6c7a89;
+  --card:#ffffff;
+  --border:#dbe7f5;
+  --shadow: 0 12px 30px rgba(13,110,253,.10);
+}
+
 body{
-background:#f3f8ff;
-font-family:Arial,Helvetica,sans-serif;
+  min-height:100vh;
+  background:
+    radial-gradient(1200px 700px at top left, rgba(13,110,253,.18), transparent 55%),
+    linear-gradient(180deg, #f7fbff 0%, #eef5ff 100%);
+  color: var(--ink);
 }
 
-.card{
-border-radius:16px;
-border:none;
+.app-shell{
+  max-width: 980px;
+  margin: 0 auto;
 }
 
-textarea{
-resize:none;
+.glass-card{
+  background: rgba(255,255,255,.92);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(219,231,245,.9);
+  box-shadow: var(--shadow);
+  border-radius: 1.35rem;
 }
 
-img.preview{
-max-width:100%;
-border-radius:12px;
+.hero-badge{
+  display:inline-flex;
+  align-items:center;
+  gap:.4rem;
+  padding:.45rem .8rem;
+  border-radius: 999px;
+  background: #e9f2ff;
+  color: var(--blue-2);
+  font-weight: 700;
+  font-size: .84rem;
 }
 
-#cameraModal .modal-dialog {
-  max-width: 100%;
-  margin: 0;
+.soft-border{
+  border-color: var(--border) !important;
 }
 
-#cameraModal .modal-content {
-  border-radius: 0;
-  height: 100vh;
+.form-control, .form-select{
+  border-radius: .95rem;
+  border-color: var(--border);
+  padding: .78rem .95rem;
 }
 
-#cameraModal .modal-body {
-  padding: 0;
+.form-control:focus, .form-select:focus{
+  border-color: rgba(13,110,253,.45);
+  box-shadow: 0 0 0 .2rem rgba(13,110,253,.10);
+}
+
+.btn{
+  border-radius: .95rem;
+  padding: .78rem 1rem;
+  font-weight: 700;
+}
+
+.btn-lg{
+  padding: .9rem 1.1rem;
+  border-radius: 1rem;
+}
+
+.status-pill{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:.75rem;
+  background:#fff;
+  border:1px solid var(--border);
+  border-radius: 1rem;
+  padding: .8rem .95rem;
+  box-shadow: 0 6px 16px rgba(20,50,74,.04);
+}
+
+.status-dot{
+  width: .65rem;
+  height: .65rem;
+  border-radius:999px;
+  display:inline-block;
+  background:#adb5bd;
+}
+
+.status-dot.online{ background:#198754; }
+.status-dot.offline{ background:#dc3545; }
+.status-dot.syncing{ background:#0d6efd; }
+
+.photo-grid{
+  display:grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap:.75rem;
+}
+
+@media (max-width: 575.98px){
+  .photo-grid{
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.photo-card{
+  position:relative;
+  border-radius: 1rem;
+  overflow:hidden;
+  border:1px solid var(--border);
+  background:#fff;
+  aspect-ratio: 1 / 1;
+}
+
+.photo-card img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:block;
+}
+
+.photo-remove{
+  position:absolute;
+  top:.4rem;
+  right:.4rem;
+  z-index:2;
+  width:1.8rem;
+  height:1.8rem;
+  border:0;
+  border-radius:999px;
+  background: rgba(220,53,69,.92);
+  color:#fff;
+  font-size:.95rem;
+  line-height:1;
+}
+
+.hint{
+  color: var(--muted);
+  font-size: .9rem;
+}
+
+.section-label{
+  font-size:.82rem;
+  font-weight:800;
+  letter-spacing:.03em;
+  color:#5f79a6;
+  text-transform:uppercase;
+}
+
+.preview-wrap{
+  border: 1px dashed #c9daf4;
+  border-radius: 1rem;
+  background: #f8fbff;
+  min-height: 110px;
+}
+
+.install-banner{
+  background: linear-gradient(90deg, #e9f2ff 0%, #f4f8ff 100%);
+  border:1px solid var(--border);
+  border-radius: 1rem;
+}
+
+#cameraModal .modal-content{
+  border-radius: 1.25rem;
+  overflow:hidden;
+  border: 0;
+}
+
+#cameraModal .modal-body{
   overflow: hidden;
 }
 
 #cameraVideo,
-#cameraPreview {
+#cameraPreview{
   width: 100%;
-  height: 70vh;
-  max-height: 70vh;
+  height: 68vh;
+  max-height: 68vh;
   object-fit: contain;
   background: #111827;
   display: block;
 }
-/* Force the camera video and captured images to fit the screen */
-video, canvas, #photoPreview img {
-    max-width: 100% !important;
-    height: auto !important;
-    display: block;
-    margin: 0 auto;
-}
 
-/* Adjust the SweetAlert popup width for mobile */
-.swal2-popup {
-    width: 95% !important;
-    padding: 10px !important;
-}
-
-@media (max-width: 575.98px) {
+@media (max-width: 575.98px){
   #cameraVideo,
-  #cameraPreview {
+  #cameraPreview{
     height: 60vh;
     max-height: 60vh;
   }
