@@ -17,9 +17,8 @@ async function syncPending() {
       try {
         const res = await fetch(API_URL, {
           method: "POST",
-          mode: "no-cors", // Add this to ignore CORS errors
           headers: { "Content-Type": "text/plain;charset=utf-8" }, // Use text/plain
-          body: JSON.stringify(payload)
+          body: JSON.stringify(row)
         });
         const data = await res.json();
         if (data.ok) {
