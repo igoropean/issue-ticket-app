@@ -9,6 +9,7 @@ window.addEventListener("load", async () => {
 
   if (localStorage.getItem("session")) {
     showApp();
+    refreshPhotoButtonLabel();
   }
 
   await updatePending();
