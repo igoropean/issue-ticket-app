@@ -1,12 +1,29 @@
-async function login() {
-  const username = document.getElementById("username").value.trim();
-  const password = document.getElementById("password").value.trim();
+let currentUser = null;
+
+function setBusy(isBusy) {
+  const loginBtn = document.getElementById("loginBtn");
+  const submitBtn = document.getElementById("submitBtn");
+  const addPhotoBtn = document.getElementById("addPhotoBtn");
+  const logoutBtn = document.getElementById("logoutBtn");
+
+  if (loginBtn) loginBtn.disabled = isBusy;
+  if (submitBtn) submitBtn.disabled = isBusy;
+  if (addPhotoBtn) addPhotoBtn.disabled = isBusy;
+  if (logoutBtn) logoutBtn.disabled = isBusy;
+}
+
+async function login(event) {
+  event.preventDefault();
+
+  const username = document.getElementById("loginUsername").value.trim();
+  const password = document.getElementById("loginPassword").value;
 
   if (!username || !password) {
     Swal.fire("Missing fields", "Please enter username and password.", "warning");
     return;
   }
 
+  setBusy(true);
   Swal.fire({
     title: "Logging in…",
     text: "Please wait while we verify your account.",
@@ -16,48 +33,61 @@ async function login() {
   });
 
   try {
-      const res = await fetch(API_URL,{
-      method:"POST",
-      body: JSON.stringify({
-      action:"login",
+    const result = await Bridge.submit({
+      action: "login",
       username,
       password
-      })
-      });
+    }, { timeout: 25000 });
 
-    const data = await res.json();
     Swal.close();
 
-    if (!data.ok) {
-      Swal.fire("Login failed", data.message || "Invalid username or password.", "error");
+    if (!result.ok) {
+      Swal.fire("Login failed", result.message || "Invalid username or password.", "error");
       return;
     }
 
-    localStorage.setItem("session", JSON.stringify(data.user));
+    currentUser = result.user;
+    localStorage.setItem(SESSION_KEY, JSON.stringify(currentUser));
     showApp();
+    refreshPhotoActionLabel();
     await updatePending();
     syncPending();
 
     Swal.fire({
       icon: "success",
       title: "Logged in",
-      text: `Welcome, ${data.user.username}`
+      text: `Welcome, ${currentUser.username}`
     });
   } catch (err) {
     Swal.close();
     Swal.fire("Login error", err.message || "Unable to log in.", "error");
+  } finally {
+    setBusy(false);
   }
 }
 
 function logout() {
-  localStorage.removeItem("session");
-  location.reload();
+  localStorage.removeItem(SESSION_KEY);
+  currentUser = null;
+  photos = [];
+  renderPhotos();
+  showLogin();
+  updatePending();
 }
 
 function showApp() {
-  const user = JSON.parse(localStorage.getItem("session"));
+  document.getElementById("loginView").classList.add("d-none");
+  document.getElementById("appView").classList.remove("d-none");
+  document.getElementById("logoutBtn").classList.remove("d-none");
 
-  document.getElementById("loginCard").classList.add("d-none");
-  document.getElementById("appCard").classList.remove("d-none");
-  document.getElementById("whoami").innerText = user.username;
+  const userLine = document.getElementById("userLine");
+  if (userLine && currentUser) {
+    userLine.textContent = `Signed in as ${currentUser.username} · Role: ${currentUser.role || "—"} · Prefix: ${currentUser.id_prefix || "—"}`;
+  }
+}
+
+function showLogin() {
+  document.getElementById("loginView").classList.remove("d-none");
+  document.getElementById("appView").classList.add("d-none");
+  document.getElementById("logoutBtn").classList.add("d-none");
 }
