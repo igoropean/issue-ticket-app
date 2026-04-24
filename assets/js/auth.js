@@ -11,19 +11,21 @@ function setBusy(isBusy) {
 /**
  * JSONP login transport for Apps Script doGet()
  */
-function appsScriptLogin(username, password) {
+function appsScriptLogin(username, password, timeoutMs = 15000) {
   return new Promise((resolve, reject) => {
-    const callbackName =
-      "loginCb_" + Date.now() + "_" + Math.random().toString(36).slice(2);
-
+    const callbackName = `loginCb_${Date.now()}_${Math.random().toString(36).slice(2)}`;
     const script = document.createElement("script");
+    let finished = false;
 
     const cleanup = () => {
+      if (finished) return;
+      finished = true;
+      clearTimeout(timer);
       try { delete window[callbackName]; } catch (_) {}
       if (script.parentNode) script.parentNode.removeChild(script);
     };
 
-    window[callbackName] = (data) => {
+    window[callbackName] = data => {
       cleanup();
       resolve(data);
     };
@@ -41,6 +43,11 @@ function appsScriptLogin(username, password) {
 
     script.src = url.toString();
     document.body.appendChild(script);
+
+    const timer = setTimeout(() => {
+      cleanup();
+      reject(new Error("Login timed out."));
+    }, timeoutMs);
   });
 }
 
