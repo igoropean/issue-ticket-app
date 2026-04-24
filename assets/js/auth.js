@@ -16,15 +16,14 @@ async function login() {
   });
 
   try {
-    const res = await fetch(API_URL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json;charset=utf-8" },
+      const res = await fetch(API_URL,{
+      method:"POST",
       body: JSON.stringify({
-        action: "login",
-        username,
-        password
+      action:"login",
+      username,
+      password
       })
-    });
+      });
 
     const data = await res.json();
     Swal.close();
