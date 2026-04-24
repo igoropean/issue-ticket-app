@@ -1,20 +1,53 @@
-window.addEventListener("online",syncPending);
+let isSyncing = false;
 
-function syncPending(){
+async function syncPending() {
+  if (!navigator.onLine || isSyncing || !db) return;
 
-getAllPending(rows=>{
+  isSyncing = true;
 
-rows.forEach(r=>{
+  try {
+    const rows = await new Promise(resolve => {
+      getAllPending(resolve);
+    });
 
-fetch(API_URL,{
-method:"POST",
-body:JSON.stringify(r)
-})
-.then(x=>x.json())
-.then(res=>{
-if(res.ok) deletePending(r.record_id);
-});
+    if (!rows.length) {
+      await updatePending();
+      return;
+    }
 
-});
-});
+    for (const row of rows) {
+      try {
+        const res = await fetch(API_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json;charset=utf-8" },
+          body: JSON.stringify(row)
+        });
+
+        const data = await res.json();
+
+        if (data.ok) {
+          await deletePending(row.record_id);
+        } else {
+          break;
+        }
+      } catch (err) {
+        break;
+      }
+    }
+
+    await updatePending();
+  } finally {
+    isSyncing = false;
+    await updatePending();
+  }
 }
+
+window.addEventListener("online", () => {
+  document.getElementById("netStatus").innerText = "Online";
+  syncPending();
+  updatePending();
+});
+
+window.addEventListener("offline", () => {
+  document.getElementById("netStatus").innerText = "Offline";
+});
