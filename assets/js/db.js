@@ -1,15 +1,13 @@
-let db;
-let dbReady;
+let db = null;
+let dbReady = null;
 
 dbReady = new Promise((resolve, reject) => {
-
-  const req = indexedDB.open("IssueDB", 1);
+  const req = indexedDB.open(DB_NAME, 1);
 
   req.onupgradeneeded = e => {
     db = e.target.result;
-
-    if (!db.objectStoreNames.contains("pending")) {
-      db.createObjectStore("pending", { keyPath: "record_id" });
+    if (!db.objectStoreNames.contains(DB_STORE)) {
+      db.createObjectStore(DB_STORE, { keyPath: "record_id" });
     }
   };
 
@@ -18,7 +16,7 @@ dbReady = new Promise((resolve, reject) => {
     resolve(db);
   };
 
-  req.onerror = e => reject(e);
+  req.onerror = () => reject(req.error);
 });
 
 async function getDB() {
@@ -26,45 +24,49 @@ async function getDB() {
   return db;
 }
 
-async function saveOffline(data) {
+async function idbPut(record) {
   const mydb = await getDB();
-
-  const tx = mydb.transaction("pending", "readwrite");
-  tx.objectStore("pending").put(data);
-
-  tx.oncomplete = updatePending;
-}
-
-async function getAllPending() {
-  const mydb = await getDB();
-
-  return new Promise(resolve => {
-    const tx = mydb.transaction("pending", "readonly");
-    const req = tx.objectStore("pending").getAll();
-
-    req.onsuccess = () => resolve(req.result || []);
+  return new Promise((resolve, reject) => {
+    const tx = mydb.transaction(DB_STORE, "readwrite");
+    tx.objectStore(DB_STORE).put(record);
+    tx.oncomplete = () => resolve(true);
+    tx.onerror = () => reject(tx.error);
   });
 }
 
-async function deletePending(id) {
+async function idbGetAll() {
   const mydb = await getDB();
+  return new Promise((resolve, reject) => {
+    const tx = mydb.transaction(DB_STORE, "readonly");
+    const req = tx.objectStore(DB_STORE).getAll();
+    req.onsuccess = () => resolve(req.result || []);
+    req.onerror = () => reject(req.error);
+  });
+}
 
-  return new Promise(resolve => {
-    const tx = mydb.transaction("pending", "readwrite");
-    tx.objectStore("pending").delete(id);
+async function idbDelete(recordId) {
+  const mydb = await getDB();
+  return new Promise((resolve, reject) => {
+    const tx = mydb.transaction(DB_STORE, "readwrite");
+    tx.objectStore(DB_STORE).delete(recordId);
+    tx.oncomplete = () => resolve(true);
+    tx.onerror = () => reject(tx.error);
+  });
+}
 
-    tx.oncomplete = resolve;
+async function idbCount() {
+  const mydb = await getDB();
+  return new Promise((resolve) => {
+    const tx = mydb.transaction(DB_STORE, "readonly");
+    const req = tx.objectStore(DB_STORE).count();
+    req.onsuccess = () => resolve(req.result || 0);
+    req.onerror = () => resolve(0);
   });
 }
 
 async function updatePending() {
-  const rows = await getAllPending();
-  const badge = document.getElementById("pendingSyncCount");
-  if (badge) {
-    // If 0, hide it or show 0. If > 0, show the count.
-    badge.innerText = `Pending Sync: ${rows.length}`;
-    badge.style.display = rows.length > 0 ? "block" : "none";
-  }
+  const count = await idbCount();
+  const badge = document.getElementById("pendingBadge");
+  if (badge) badge.textContent = String(count);
+  return count;
 }
-
-
