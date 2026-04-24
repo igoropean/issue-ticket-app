@@ -1,50 +1,91 @@
-function submitTicket(){
+async function submitTicket() {
+  const user = JSON.parse(localStorage.getItem("session"));
 
-const user=JSON.parse(localStorage.getItem("session"));
+  if (!user) {
+    Swal.fire("Not logged in", "Please log in first.", "warning");
+    return;
+  }
 
-const payload={
-record_id:Date.now()+"",
-timestamp:new Date().toLocaleString(),
-username:user.username,
-ticket_number:user.id_prefix+Date.now(),
-store_code:storeCode.value,
-issue_description:issueDesc.value,
-priority:priority.value,
-image:capturedImage
-};
+  const storeCode = document.getElementById("storeCode").value.trim();
+  const issueDesc = document.getElementById("issueDesc").value.trim();
+  const priority = document.getElementById("priority").value;
 
-if(!navigator.onLine){
-saveOffline(payload);
-Swal.fire("Saved Offline","","info");
-return;
+  if (!storeCode || !issueDesc) {
+    Swal.fire("Missing fields", "Please fill in Store Code and Issue Description.", "warning");
+    return;
+  }
+
+  const payload = {
+    action: "submitTicket",
+    record_id: Date.now() + "_" + Math.random().toString(36).slice(2),
+    timestamp: new Date().toLocaleString(),
+    username: user.username,
+    ticket_number: `${user.id_prefix || "TCK"}${Date.now()}`,
+    store_code: storeCode,
+    issue_description: issueDesc,
+    priority: priority,
+    image: capturedImage
+  };
+
+  if (!capturedImage) {
+    Swal.fire("No photo", "Please capture at least one photo before submitting.", "warning");
+    return;
+  }
+
+  Swal.fire({
+    title: "Creating ticket…",
+    text: navigator.onLine ? "Uploading to server" : "Saving offline",
+    allowOutsideClick: false,
+    allowEscapeKey: false,
+    didOpen: () => Swal.showLoading()
+  });
+
+  try {
+    if (!navigator.onLine) {
+      saveOffline(payload);
+      Swal.close();
+      Swal.fire("Saved offline", "No internet connection. The ticket will sync later.", "info");
+      clearForm();
+      await updatePending();
+      return;
+    }
+
+    const res = await fetch(API_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json;charset=utf-8" },
+      body: JSON.stringify(payload)
+    });
+
+    const data = await res.json();
+    Swal.close();
+
+    if (data.ok) {
+      Swal.fire({
+        icon: "success",
+        title: "Ticket created",
+        text: data.message || "The ticket was saved successfully."
+      });
+      clearForm();
+      await updatePending();
+    } else {
+      saveOffline(payload);
+      Swal.fire("Saved offline", data.message || "Server rejected the request, so it was queued locally.", "info");
+      clearForm();
+      await updatePending();
+    }
+  } catch (err) {
+    Swal.close();
+    saveOffline(payload);
+    Swal.fire("Saved offline", "The request failed and was queued locally.", "info");
+    clearForm();
+    await updatePending();
+  }
 }
 
-sendNow(payload);
-}
-
-function sendNow(payload){
-
-fetch(API_URL,{
-method:"POST",
-body:JSON.stringify(payload)
-})
-.then(r=>r.json())
-.then(res=>{
-
-if(res.ok){
-Swal.fire("Ticket Created","","success");
-clearForm();
-}else{
-saveOffline(payload);
-Swal.fire("Saved Offline","","info");
-}
-
-});
-}
-
-function clearForm(){
-storeCode.value="";
-issueDesc.value="";
-capturedImage="";
-photoPreview.innerHTML="";
+function clearForm() {
+  document.getElementById("storeCode").value = "";
+  document.getElementById("issueDesc").value = "";
+  document.getElementById("priority").value = "Priority 2";
+  capturedImage = "";
+  document.getElementById("photoPreview").innerHTML = "";
 }
