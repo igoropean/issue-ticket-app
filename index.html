@@ -3,9 +3,6 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
-<link rel="apple-touch-icon" href="icons/icon-192.png">
 <title>Issue Ticket App</title>
 
 <link rel="manifest" href="manifest.json">
@@ -17,7 +14,13 @@
 </head>
 
 <body>
-
+<div id="installBanner" class="alert alert-primary d-none d-flex justify-content-between align-items-center gap-2">
+  <div>
+    <strong>Install this app</strong><br>
+    <small id="installBannerText">Add Issue Ticket App to your home screen for faster access.</small>
+  </div>
+  <button id="installBtn" class="btn btn-sm btn-primary">Install</button>
+</div>
 <div class="container py-3">
 
 <div id="loginCard" class="card shadow p-4">
@@ -40,13 +43,7 @@
 <button class="btn btn-outline-danger btn-sm" onclick="logout()">Logout</button>
 </div>
 </div>
-<div id="installBanner" class="alert alert-primary d-none d-flex justify-content-between align-items-center gap-2">
-  <div>
-    <strong>Install this app</strong><br>
-    <small id="installBannerText">Add Issue Ticket App to your home screen for faster access.</small>
-  </div>
-  <button id="installBtn" class="btn btn-sm btn-primary">Install</button>
-</div>
+
 <div class="card shadow p-3">
 
 <input id="storeCode" class="form-control mb-3" placeholder="Store Code">
