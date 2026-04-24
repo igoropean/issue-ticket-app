@@ -16,3 +16,36 @@ img.preview{
 max-width:100%;
 border-radius:12px;
 }
+
+#cameraModal .modal-dialog {
+  max-width: 100%;
+  margin: 0;
+}
+
+#cameraModal .modal-content {
+  border-radius: 0;
+  height: 100vh;
+}
+
+#cameraModal .modal-body {
+  padding: 0;
+  overflow: hidden;
+}
+
+#cameraVideo,
+#cameraPreview {
+  width: 100%;
+  height: 70vh;
+  max-height: 70vh;
+  object-fit: contain;
+  background: #111827;
+  display: block;
+}
+
+@media (max-width: 575.98px) {
+  #cameraVideo,
+  #cameraPreview {
+    height: 60vh;
+    max-height: 60vh;
+  }
+}
