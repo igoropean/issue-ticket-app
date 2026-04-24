@@ -1,4 +1,4 @@
-const CACHE_NAME = "issue-ticket-pro-v5";
+const CACHE_NAME = "issue-ticket-pro-v6";
 const APP_ORIGIN = self.location.origin;
 const APP_SCOPE = self.registration.scope;
 
@@ -26,7 +26,7 @@ const PRECACHE_URLS = [
 self.addEventListener("install", event => {
   event.waitUntil(
     caches.open(CACHE_NAME).then(async cache => {
-      for (const file of ASSETS) {
+      for (const file of PRECACHE_URLS) {
         try {
           await cache.add(file);
         } catch (err) {
