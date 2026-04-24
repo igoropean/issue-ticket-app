@@ -41,15 +41,6 @@ async function submitTicket() {
   });
 
   try {
-    if (!navigator.onLine) {
-      saveOffline(payload);
-      Swal.close();
-      Swal.fire("Saved offline", "No internet connection. The ticket will sync later.", "info");
-      clearForm();
-      await updatePending();
-      return;
-    }
-
     const res = await fetch(API_URL, {
       method: "POST",
       headers: { "Content-Type": "application/json;charset=utf-8" },
