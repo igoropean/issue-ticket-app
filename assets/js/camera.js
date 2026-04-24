@@ -36,9 +36,10 @@ async function capturePhoto() {
       },
       preConfirm: () => {
         const canvas = document.createElement("canvas");
-        canvas.width = video.videoWidth || 1280;
-        canvas.height = video.videoHeight || 720;
-
+        // Ensure the canvas matches the actual video stream size
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        
         const ctx = canvas.getContext("2d");
         ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
