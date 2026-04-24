@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Issue Ticket App</title>
+
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0d6efd">
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+
+<body>
+
+<div class="container py-3">
+
+<div id="loginCard" class="card shadow p-4">
+<h3 class="mb-3 text-primary">Issue Ticket Login</h3>
+
+<input id="username" class="form-control mb-2" placeholder="Username">
+<input id="password" type="password" class="form-control mb-3" placeholder="Password">
+
+<button class="btn btn-primary w-100" onclick="login()">Login</button>
+</div>
+
+<div id="appCard" class="d-none">
+
+<div class="card shadow p-3 mb-3">
+<div class="d-flex justify-content-between">
+<div>
+<h4 class="text-primary mb-0">Create Ticket</h4>
+<small id="whoami"></small>
+</div>
+<button class="btn btn-outline-danger btn-sm" onclick="logout()">Logout</button>
+</div>
+</div>
+
+<div class="card shadow p-3">
+
+<input id="storeCode" class="form-control mb-3" placeholder="Store Code">
+
+<textarea id="issueDesc" class="form-control mb-3" rows="4" placeholder="Issue Description"></textarea>
+
+<select id="priority" class="form-select mb-3">
+<option>Priority 1</option>
+<option selected>Priority 2</option>
+<option>Priority 3</option>
+</select>
+
+<button class="btn btn-outline-primary w-100 mb-3" onclick="capturePhoto()">Add Photo</button>
+
+<div id="photoPreview" class="mb-3 text-center"></div>
+
+<button id="submitBtn" class="btn btn-success w-100" onclick="submitTicket()">Create Ticket</button>
+
+</div>
+
+<div class="card shadow p-3 mt-3">
+<div>Status: <span id="netStatus"></span></div>
+<div>Pending Sync: <span id="pendingCount">0</span></div>
+</div>
+
+</div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script src="assets/js/config.js"></script>
+<script src="assets/js/db.js"></script>
+<script src="assets/js/auth.js"></script>
+<script src="assets/js/camera.js"></script>
+<script src="assets/js/submit.js"></script>
+<script src="assets/js/sync.js"></script>
+<script src="assets/js/app.js"></script>
+
+</body>
+</html>
