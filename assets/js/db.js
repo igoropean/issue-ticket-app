@@ -59,5 +59,12 @@ async function deletePending(id) {
 
 async function updatePending() {
   const rows = await getAllPending();
-  document.getElementById("pendingCount").innerText = rows.length;
+  const count = rows.length;
+  const badge = document.getElementById("pendingSyncCount");
+  if (badge) {
+    badge.innerText = `Pending Sync: ${count}`;
+    // Optional: Hide badge if count is 0
+    badge.style.display = count > 0 ? "block" : "none";
+  }
 }
+
