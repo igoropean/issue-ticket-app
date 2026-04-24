@@ -1,52 +1,63 @@
 let db;
+let dbReady;
 
-const req = indexedDB.open("IssueDB", 1);
+dbReady = new Promise((resolve, reject) => {
 
-req.onupgradeneeded = e => {
-  db = e.target.result;
-  if (!db.objectStoreNames.contains("pending")) {
-    db.createObjectStore("pending", { keyPath: "record_id" });
-  }
-};
+  const req = indexedDB.open("IssueDB", 1);
 
-req.onsuccess = e => {
-  db = e.target.result;
-  updatePending();
-  syncPending();
-};
+  req.onupgradeneeded = e => {
+    db = e.target.result;
 
-function saveOffline(data) {
-  const tx = db.transaction("pending", "readwrite");
+    if (!db.objectStoreNames.contains("pending")) {
+      db.createObjectStore("pending", { keyPath: "record_id" });
+    }
+  };
+
+  req.onsuccess = e => {
+    db = e.target.result;
+    resolve(db);
+  };
+
+  req.onerror = e => reject(e);
+});
+
+async function getDB() {
+  if (!db) await dbReady;
+  return db;
+}
+
+async function saveOffline(data) {
+  const mydb = await getDB();
+
+  const tx = mydb.transaction("pending", "readwrite");
   tx.objectStore("pending").put(data);
-  tx.oncomplete = () => updatePending();
+
+  tx.oncomplete = updatePending;
 }
 
-function getAllPending(cb) {
-  const tx = db.transaction("pending", "readonly");
-  const req = tx.objectStore("pending").getAll();
-  req.onsuccess = () => cb(req.result || []);
-  req.onerror = () => cb([]);
-}
+async function getAllPending() {
+  const mydb = await getDB();
 
-function deletePending(id) {
   return new Promise(resolve => {
-    const tx = db.transaction("pending", "readwrite");
-    tx.objectStore("pending").delete(id);
-    tx.oncomplete = () => resolve();
-    tx.onerror = () => resolve();
+    const tx = mydb.transaction("pending", "readonly");
+    const req = tx.objectStore("pending").getAll();
+
+    req.onsuccess = () => resolve(req.result || []);
   });
 }
 
-function countPending() {
+async function deletePending(id) {
+  const mydb = await getDB();
+
   return new Promise(resolve => {
-    const tx = db.transaction("pending", "readonly");
-    const req = tx.objectStore("pending").count();
-    req.onsuccess = () => resolve(req.result || 0);
-    req.onerror = () => resolve(0);
+    const tx = mydb.transaction("pending", "readwrite");
+    tx.objectStore("pending").delete(id);
+
+    tx.oncomplete = resolve;
   });
 }
 
 async function updatePending() {
-  const count = await countPending();
-  document.getElementById("pendingCount").innerText = count;
+  const rows = await getAllPending();
+  document.getElementById("pendingCount").innerText = rows.length;
 }
