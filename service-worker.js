@@ -1,4 +1,4 @@
-const CACHE_NAME = "issue-ticket-pro-v3";
+const CACHE_NAME = "issue-ticket-pro-v4";
 const APP_ORIGIN = self.location.origin;
 const APP_SCOPE = self.registration.scope;
 
