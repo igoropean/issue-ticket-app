@@ -6,6 +6,7 @@ if ("serviceWorker" in navigator) {
 
 window.addEventListener("load", async () => {
   document.getElementById("netStatus").innerText = navigator.onLine ? "Online" : "Offline";
+  document.getElementById("addPhotoBtn")?.addEventListener("click", capturePhoto);
 
   if (localStorage.getItem("session")) {
     showApp();
