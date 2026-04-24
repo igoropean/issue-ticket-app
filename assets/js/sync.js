@@ -2,13 +2,11 @@ let isSyncing = false;
 
 async function syncPending() {
   if (!navigator.onLine || isSyncing || !db) return;
-
   isSyncing = true;
-
+  
   try {
-    const rows = await new Promise(resolve => {
-      getAllPending(resolve);
-    });
+    // FIX: Await the function directly since it already returns a Promise
+    const rows = await getAllPending(); 
 
     if (!rows.length) {
       await updatePending();
@@ -22,19 +20,16 @@ async function syncPending() {
           headers: { "Content-Type": "application/json;charset=utf-8" },
           body: JSON.stringify(row)
         });
-
         const data = await res.json();
-
         if (data.ok) {
           await deletePending(row.record_id);
         } else {
-          break;
+          break; 
         }
       } catch (err) {
         break;
       }
     }
-
     await updatePending();
   } finally {
     isSyncing = false;
