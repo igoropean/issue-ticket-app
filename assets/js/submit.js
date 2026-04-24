@@ -88,4 +88,5 @@ function clearForm() {
   document.getElementById("priority").value = "Priority 2";
   capturedImage = "";
   document.getElementById("photoPreview").innerHTML = "";
+  refreshPhotoButtonLabel();
 }
