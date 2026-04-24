@@ -43,7 +43,8 @@ async function submitTicket() {
   try {
     const res = await fetch(API_URL, {
       method: "POST",
-      headers: { "Content-Type": "application/json;charset=utf-8" },
+      mode: "no-cors", // Add this to ignore CORS errors
+      headers: { "Content-Type": "text/plain;charset=utf-8" }, // Use text/plain
       body: JSON.stringify(payload)
     });
 
