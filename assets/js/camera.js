@@ -155,7 +155,7 @@ async function captureCurrentFrame() {
 
 function refreshPhotoActionLabel() {
   const count = photos.length;
-  addPhotoBtn.textContent = count > 0 ? "Retake Photo" : "Add Photo";
+  addPhotoBtn.textContent = count > 0 ? "Take Another Photo" : "Add Photo";
   addPhotoBtn.disabled = count >= MAX_PHOTOS;
 }
 
