@@ -15,12 +15,23 @@ async function submitTicket(event) {
     return;
   }
 
+  if (!Array.isArray(photos) || photos.length === 0) {
+    Swal.fire("No Photo", "Please capture at least one photo.", "warning");
+    return;
+  }
+
   const recordId = generateRecordId(currentUser.id_prefix || "TK");
   const ticketNumber = generateTicketNumber(currentUser.id_prefix || "TK");
   const timestamp = getLocalTimestamp();
 
+  const imageItems = photos.map((p, index) => ({
+    dataUrl: p.dataUrl || "",
+    timestampFile: p.timestampFile || "",
+    fileName: p.fileName || `${currentUser.username}_${storeCode}_${index + 1}.jpg`
+  }));
+
   const payload = {
-    action: "submit",
+    action: "submitTicket",
     record_id: recordId,
     timestamp: timestamp,
     username: currentUser.username,
@@ -28,7 +39,8 @@ async function submitTicket(event) {
     store_code: storeCode,
     issue_description: issueDescription,
     priority: priority,
-    image: (typeof photos !== "undefined" && photos[0]) ? photos[0] : ""
+    image: imageItems[0]?.dataUrl || "",
+    images: imageItems
   };
 
   setBusy(true);
@@ -45,13 +57,7 @@ async function submitTicket(event) {
     if (!navigator.onLine) {
       await savePending(payload);
       Swal.close();
-
-      Swal.fire(
-        "Saved Offline",
-        "Ticket saved locally and will sync automatically.",
-        "info"
-      );
-
+      Swal.fire("Saved Offline", "Ticket saved locally and will sync automatically.", "info");
       resetTicketForm();
       await updatePending();
       return;
@@ -60,21 +66,14 @@ async function submitTicket(event) {
     await sendDirect(payload);
 
     Swal.close();
-
-    Swal.fire(
-      "Success",
-      "Ticket created successfully.",
-      "success"
-    );
+    Swal.fire("Success", "Ticket created successfully.", "success");
 
     resetTicketForm();
     await updatePending();
 
   } catch (err) {
     await savePending(payload);
-
     Swal.close();
-
     Swal.fire(
       "Saved Offline",
       "Server unreachable. Ticket saved locally and will sync later.",
@@ -88,44 +87,35 @@ async function submitTicket(event) {
   }
 }
 
-function sendDirect(payload) {
-  return new Promise((resolve, reject) => {
-    const iframeName = "submitFrame_" + Date.now();
-    const iframe = document.createElement("iframe");
-    iframe.name = iframeName;
-    iframe.style.display = "none";
+async function sendDirect(payload) {
+  const body = JSON.stringify(payload);
 
-    const form = document.createElement("form");
-    form.method = "POST";
-    form.action = API_URL;
-    form.target = iframeName;
-    form.style.display = "none";
+  if (navigator.sendBeacon) {
+    const ok = navigator.sendBeacon(
+      API_URL,
+      new Blob([body], { type: "text/plain;charset=UTF-8" })
+    );
 
-    const input = document.createElement("input");
-    input.type = "hidden";
-    input.name = "payload";
-    input.value = JSON.stringify(payload);
+    if (!ok) {
+      throw new Error("Unable to queue submission.");
+    }
 
-    form.appendChild(input);
-    document.body.appendChild(iframe);
-    document.body.appendChild(form);
+    return true;
+  }
 
-    iframe.onload = () => {
-      setTimeout(() => {
-        form.remove();
-        iframe.remove();
-        resolve(true);
-      }, 800);
-    };
-
-    iframe.onerror = () => {
-      form.remove();
-      iframe.remove();
-      reject(new Error("Submit failed"));
-    };
-
-    form.submit();
+  const res = await fetch(API_URL, {
+    method: "POST",
+    headers: {
+      "Content-Type": "text/plain;charset=UTF-8"
+    },
+    body
   });
+
+  if (!res.ok) {
+    throw new Error("Server rejected the submission.");
+  }
+
+  return true;
 }
 
 function resetTicketForm() {
@@ -147,24 +137,20 @@ function generateRecordId(prefix) {
 
 function generateTicketNumber(prefix) {
   const d = new Date();
-
   const yyyy = d.getFullYear();
   const mm = String(d.getMonth() + 1).padStart(2, "0");
   const dd = String(d.getDate()).padStart(2, "0");
   const hh = String(d.getHours()).padStart(2, "0");
   const mi = String(d.getMinutes()).padStart(2, "0");
-
   return `${prefix}${yyyy}${mm}${dd}${hh}${mi}`;
 }
 
 function getLocalTimestamp() {
   const d = new Date();
-
   const yyyy = d.getFullYear();
   const mm = String(d.getMonth() + 1).padStart(2, "0");
   const dd = String(d.getDate()).padStart(2, "0");
   const hh = String(d.getHours()).padStart(2, "0");
   const mi = String(d.getMinutes()).padStart(2, "0");
-
   return `${yyyy}-${mm}-${dd} ${hh}:${mi}`;
 }
