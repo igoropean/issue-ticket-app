@@ -142,8 +142,7 @@ function showApp() {
   if (userLine && currentUser) {
     userLine.textContent =
       `Signed in as ${currentUser.username} · ` +
-      `Role: ${currentUser.role || "-"} · `
-      ;
+      `Role: ${currentUser.role || "-"}`;
   }
 }
 
