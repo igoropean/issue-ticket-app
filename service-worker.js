@@ -1,4 +1,4 @@
-const CACHE_NAME = "issue-ticket-pro-v11";
+const CACHE_NAME = "issue-ticket-pro-v12";
 
 const ASSETS = [
   "./",
@@ -12,8 +12,8 @@ const ASSETS = [
   "./assets/js/submit.js",
   "./assets/js/sync.js",
   "./assets/js/app.js",
-  "./icons/icon-192.png",
-  "./icons/icon-512.png"
+  "./icon-192.png",
+  "./icon-512.png"
 ];
 
 self.addEventListener("install", event => {
@@ -32,7 +32,11 @@ self.addEventListener("install", event => {
 });
 
 self.addEventListener("activate", event => {
-  event.waitUntil(self.clients.claim());
+  event.waitUntil(
+    caches.keys().then(keys =>
+      Promise.all(keys.map(key => key !== CACHE_NAME ? caches.delete(key) : Promise.resolve()))
+    ).then(() => self.clients.claim())
+  );
 });
 
 self.addEventListener("fetch", event => {
