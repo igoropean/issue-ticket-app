@@ -88,17 +88,43 @@ async function submitTicket(event) {
   }
 }
 
-/**
- * Direct POST to Apps Script (no-cors)
- */
-async function sendDirect(payload) {
-  await fetch(API_URL, {
-    method: "POST",
-    mode: "no-cors",
-    headers: {
-      "Content-Type": "text/plain;charset=utf-8"
-    },
-    body: JSON.stringify(payload)
+function sendDirect(payload) {
+  return new Promise((resolve, reject) => {
+    const iframeName = "submitFrame_" + Date.now();
+    const iframe = document.createElement("iframe");
+    iframe.name = iframeName;
+    iframe.style.display = "none";
+
+    const form = document.createElement("form");
+    form.method = "POST";
+    form.action = API_URL;
+    form.target = iframeName;
+    form.style.display = "none";
+
+    const input = document.createElement("input");
+    input.type = "hidden";
+    input.name = "payload";
+    input.value = JSON.stringify(payload);
+
+    form.appendChild(input);
+    document.body.appendChild(iframe);
+    document.body.appendChild(form);
+
+    iframe.onload = () => {
+      setTimeout(() => {
+        form.remove();
+        iframe.remove();
+        resolve(true);
+      }, 800);
+    };
+
+    iframe.onerror = () => {
+      form.remove();
+      iframe.remove();
+      reject(new Error("Submit failed"));
+    };
+
+    form.submit();
   });
 }
 
