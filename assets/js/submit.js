@@ -86,35 +86,60 @@ async function submitTicket(event) {
   }
 }
 
-async function sendDirect(payload) {
-  const body = JSON.stringify(payload);
+function sendDirect(payload) {
+  return new Promise((resolve, reject) => {
+    const iframeName = "postFrame_" + Date.now();
 
-  if (navigator.sendBeacon) {
-    const ok = navigator.sendBeacon(
-      API_URL,
-      new Blob([body], { type: "text/plain;charset=UTF-8" })
-    );
+    const iframe = document.createElement("iframe");
+    iframe.name = iframeName;
+    iframe.style.display = "none";
 
-    if (!ok) {
-      throw new Error("Unable to queue submission.");
-    }
+    const form = document.createElement("form");
+    form.method = "POST";
+    form.action = API_URL;
+    form.target = iframeName;
+    form.style.display = "none";
 
-    return true;
-  }
+    const input = document.createElement("input");
+    input.type = "hidden";
+    input.name = "payload";
+    input.value = JSON.stringify(payload);
 
-  const res = await fetch(API_URL, {
-    method: "POST",
-    headers: {
-      "Content-Type": "text/plain;charset=UTF-8"
-    },
-    body
+    form.appendChild(input);
+
+    document.body.appendChild(iframe);
+    document.body.appendChild(form);
+
+    let done = false;
+
+    const clean = () => {
+      if (done) return;
+      done = true;
+      setTimeout(() => {
+        iframe.remove();
+        form.remove();
+      }, 500);
+    };
+
+    iframe.onload = () => {
+      clean();
+      resolve(true);
+    };
+
+    iframe.onerror = () => {
+      clean();
+      reject(new Error("Unable to reach server."));
+    };
+
+    form.submit();
+
+    setTimeout(() => {
+      if (!done) {
+        clean();
+        reject(new Error("Timed out."));
+      }
+    }, 15000);
   });
-
-  if (!res.ok) {
-    throw new Error("Server rejected the submission.");
-  }
-
-  return true;
 }
 
 function resetTicketForm() {
