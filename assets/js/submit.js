@@ -24,7 +24,7 @@ async function submitTicket(event) {
   const ticketNumber = generateTicketNumber(currentUser.id_prefix || "TK");
   const timestamp = getLocalTimestamp();
 
-  const imageItems = photos.map((p, index) => ({
+  const images = photos.map((p, index) => ({
     dataUrl: p.dataUrl || "",
     timestampFile: p.timestampFile || "",
     fileName: p.fileName || `${currentUser.username}_${storeCode}_${index + 1}.jpg`
@@ -33,14 +33,14 @@ async function submitTicket(event) {
   const payload = {
     action: "submitTicket",
     record_id: recordId,
-    timestamp: timestamp,
+    timestamp,
     username: currentUser.username,
     ticket_number: ticketNumber,
     store_code: storeCode,
     issue_description: issueDescription,
-    priority: priority,
-    image: imageItems[0]?.dataUrl || "",
-    images: imageItems
+    priority,
+    image: images[0]?.dataUrl || "",
+    images
   };
 
   setBusy(true);
@@ -70,7 +70,6 @@ async function submitTicket(event) {
 
     resetTicketForm();
     await updatePending();
-
   } catch (err) {
     await savePending(payload);
     Swal.close();
