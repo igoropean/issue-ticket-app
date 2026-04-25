@@ -149,7 +149,7 @@ async function captureCurrentFrame() {
   cameraPreview.classList.remove("d-none");
   cameraVideo.classList.add("d-none");
   captureBtn.classList.add("d-none");
-  reBtn.classList.remove("d-none");
+  retakeBtn.classList.remove("d-none");
   usePhotoBtn.classList.remove("d-none");
 }
 
