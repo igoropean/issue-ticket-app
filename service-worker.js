@@ -1,4 +1,4 @@
-const CACHE_NAME = "issue-ticket-pro-v12";
+const CACHE_NAME = "issue-ticket-pro-v13";
 
 const ASSETS = [
   "./",
