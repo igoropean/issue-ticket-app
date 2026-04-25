@@ -70,3 +70,7 @@ async function updatePending() {
   if (badge) badge.textContent = String(count);
   return count;
 }
+
+async function savePending(record) {
+  return idbPut(record);
+}
