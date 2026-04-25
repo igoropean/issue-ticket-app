@@ -117,4 +117,5 @@ window.addEventListener("load", async () => {
 });
 
 document.getElementById("loginForm").addEventListener("submit", login);
+document.getElementById("ticketForm").addEventListener("submit", submitTicket);
 document.getElementById("logoutBtn").addEventListener("click", logout);
