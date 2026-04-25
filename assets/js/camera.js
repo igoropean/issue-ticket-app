@@ -149,13 +149,13 @@ async function captureCurrentFrame() {
   cameraPreview.classList.remove("d-none");
   cameraVideo.classList.add("d-none");
   captureBtn.classList.add("d-none");
-  retakeBtn.classList.remove("d-none");
+  reBtn.classList.remove("d-none");
   usePhotoBtn.classList.remove("d-none");
 }
 
 function refreshPhotoActionLabel() {
   const count = photos.length;
-  addPhotoBtn.textContent = count > 0 ? "Take Another Photo" : "Add Photo";
+  addPhotoBtn.textContent = count > 0 ? "Take More Photo" : "Add Photo";
   addPhotoBtn.disabled = count >= MAX_PHOTOS;
 }
 
